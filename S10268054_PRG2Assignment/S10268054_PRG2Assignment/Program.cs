@@ -102,11 +102,82 @@ int LoadBoardingGates(string filePath, Dictionary<string, BoardingGate> boarding
     return count;
 }
 
-    
-
-
-
-
 
 
 // Feature 2
+
+// Dictionary to store Flight objects
+Dictionary<string, Flight> flightDictionary = new Dictionary<string, Flight>();
+
+// Load flights and print confirmation messages
+string filepath3 = @"C:\S0268054_PRG2Assignment\S10268054_PRG2Assignment\S10268054_PRG2Assignment\flights.csv";
+Console.WriteLine("Loading Flights...");
+int flightCount = LoadFlights(filepath3, flightDictionary);
+Console.WriteLine($"{flightCount} Flights Loaded!");
+
+int LoadFlights(string filePath, Dictionary<string, Flight> flightDictionary)
+{
+    int count = 0;
+
+    try
+    {
+        using (StreamReader sr = new StreamReader(filePath))
+        {
+            string line;
+            bool isFirstLine = true; // Flag to skip the header
+            while ((line = sr.ReadLine()) != null)
+            {
+                if (isFirstLine)
+                {
+                    isFirstLine = false;
+                    continue; // Skip the header line
+                }
+
+                if (string.IsNullOrWhiteSpace(line)) continue;
+
+                // Assuming CSV format: flightNumber,origin,destination,expectedTime,status,specialRequestCode
+                string[] parts = line.Split(',');
+                if (parts.Length >= 5)
+                {
+                    string flightNumber = parts[0].Trim();
+                    string origin = parts[1].Trim();
+                    string destination = parts[2].Trim();
+                    DateTime expectedTime = DateTime.Parse(parts[3].Trim());
+                    string status = parts[4].Trim();
+                    string specialRequestCode = parts.Length == 6 ? parts[5].Trim() : null;
+
+                    // Create the appropriate Flight object based on the special request code
+                    Flight flight;
+                    switch (specialRequestCode)
+                    {
+                        case "DDJB":
+                            flight = new DDJBFlight(flightNumber, origin, destination, expectedTime, status, 300.0);
+                            break;
+                        case "CFFT":
+                            flight = new CFFTFlight(flightNumber, origin, destination, expectedTime, status, 150.0);
+                            break;
+                        case "LWTT":
+                            flight = new LWTTFlight(flightNumber, origin, destination, expectedTime, status, 500.0);
+                            break;
+                        default:
+                            flight = new NORMFlight(flightNumber, origin, destination, expectedTime, status);
+                            break;
+                    }
+
+                    // Add the Flight object to the dictionary
+                    flightDictionary[flightNumber] = flight;
+                    count++;
+                }
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error loading flights: {ex.Message}");
+    }
+
+    return count; // Return the number of flights loaded
+}
+
+
+
