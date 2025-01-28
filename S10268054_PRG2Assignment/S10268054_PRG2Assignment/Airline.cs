@@ -18,6 +18,12 @@ namespace S10268054_PRG2Assignment
             code = Code;
             flights = Flights;
         }
+        public Airline(string Name, string Code)
+        {
+            name = Name;
+            code = Code;
+            
+        }
 
 
 

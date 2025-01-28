@@ -22,6 +22,14 @@ namespace S10268054_PRG2Assignment
             supportsLWTT = SupportsLWTT;
             flight = Flight;
         }
+        public BoardingGate(string GateName, bool SupportsCFFT, bool SupportsDDJB, bool SupportsLWTT)
+        {
+            gateName = GateName;
+            supportsCFFT = SupportsCFFT;
+            supportsDDJB = SupportsDDJB;
+            supportsLWTT = SupportsLWTT;
+            
+        }
 
 
 

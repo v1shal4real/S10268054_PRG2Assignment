@@ -1,40 +1,44 @@
 ﻿// See https://aka.ms/new-console-template for more information
-// Feature 1
 
-// Dictionaries to store Airline and BoardingGate objects
 
 
 using S10268054_PRG2Assignment;
+// Feature 1
+// Dictionaries to store Airline and BoardingGate objects
 
 Dictionary<string, Airline> airlineDictionary = new Dictionary<string, Airline>();
 Dictionary<string, BoardingGate> boardingGateDictionary = new Dictionary<string, BoardingGate>();
 
-LoadAirlines("airlines.csv", airlineDictionary);
-LoadBoardingGates("boardinggates.csv", boardingGateDictionary);
+string filepath1 = @"C:\S0268054_PRG2Assignment\S10268054_PRG2Assignment\S10268054_PRG2Assignment\airlines.csv";
+Console.WriteLine("Loading Airlines...");
+int airlineCount = LoadAirlines(filepath1, airlineDictionary);
+Console.WriteLine($"{airlineCount} Airlines Loaded!");
+
+string filepath2 = @"C:\S0268054_PRG2Assignment\S10268054_PRG2Assignment\S10268054_PRG2Assignment\boardinggates.csv";
+Console.WriteLine("\nLoading Boarding Gates...");
+int boardingGateCount = LoadBoardingGates(filepath2, boardingGateDictionary);
+Console.WriteLine($"{boardingGateCount} Boarding Gates Loaded!");
 
 
-Console.WriteLine("Airlines:");
-foreach (var airline in airlineDictionary.Values)
+
+int LoadAirlines(string filePath, Dictionary<string, Airline> airlineDictionary)
 {
-    Console.WriteLine(airline.ToString());
-}
-
-Console.WriteLine("\nBoarding Gates:");
-foreach (var gate in boardingGateDictionary.Values)
-{
-    Console.WriteLine(gate.ToString());
-}
-
-
-static void LoadAirlines(string filePath, Dictionary<string, Airline> airlineDictionary)
-{
+    int count = 0;
     try
     {
-        using (StreamReader sr = new StreamReader("airlines.csv"))
+        using (StreamReader sr = new StreamReader(filePath))
         {
             string line;
+            bool isFirstLine = true;
             while ((line = sr.ReadLine()) != null)
             {
+                if (isFirstLine)
+                {
+                    isFirstLine = false;
+                    continue; // Skip header line
+                }
+
+                if (string.IsNullOrWhiteSpace(line)) continue;
 
                 string[] parts = line.Split(',');
                 if (parts.Length == 2)
@@ -42,11 +46,8 @@ static void LoadAirlines(string filePath, Dictionary<string, Airline> airlineDic
                     string name = parts[0].Trim();
                     string code = parts[1].Trim();
 
-
-                    Airline airline = new Airline(name, code);
-
-
-                    airlineDictionary[code] = airline;
+                    airlineDictionary[code] = new Airline(name, code);
+                    count++;
                 }
             }
         }
@@ -55,31 +56,41 @@ static void LoadAirlines(string filePath, Dictionary<string, Airline> airlineDic
     {
         Console.WriteLine($"Error loading airlines: {ex.Message}");
     }
+    return count;
 }
 
-static void LoadBoardingGates(string filePath, Dictionary<string, BoardingGate> boardingGateDictionary)
+int LoadBoardingGates(string filePath, Dictionary<string, BoardingGate> boardingGateDictionary)
 {
+    int count = 0;
     try
     {
-        using (StreamReader sr = new StreamReader("boardingggates.csv"))
+        using (StreamReader sr = new StreamReader(filePath))
         {
             string line;
+            bool isFirstLine = true;
             while ((line = sr.ReadLine()) != null)
             {
+                if (isFirstLine)
+                {
+                    isFirstLine = false;
+                    continue; // Skip header line
+                }
+                if (string.IsNullOrWhiteSpace(line)) continue;
 
                 string[] parts = line.Split(',');
                 if (parts.Length == 4)
                 {
+                    if (!bool.TryParse(parts[1].Trim(), out bool supportsCFFT) ||
+                        !bool.TryParse(parts[2].Trim(), out bool supportsDDJB) ||
+                        !bool.TryParse(parts[3].Trim(), out bool supportsLWTT))
+                    {
+                        Console.WriteLine($"Invalid boolean values in line: {line}");
+                        continue;
+                    }
+
                     string gateName = parts[0].Trim();
-                    bool supportsCFFT = bool.Parse(parts[1].Trim());
-                    bool supportsDDJB = bool.Parse(parts[2].Trim());
-                    bool supportsLWTT = bool.Parse(parts[3].Trim());
-
-
-                    BoardingGate gate = new(gateName, supportsCFFT, supportsDDJB, supportsLWTT);
-
-
-                    boardingGateDictionary[gateName] = gate;
+                    boardingGateDictionary[gateName] = new BoardingGate(gateName, supportsCFFT, supportsDDJB, supportsLWTT);
+                    count++;
                 }
             }
         }
@@ -88,4 +99,14 @@ static void LoadBoardingGates(string filePath, Dictionary<string, BoardingGate> 
     {
         Console.WriteLine($"Error loading boarding gates: {ex.Message}");
     }
+    return count;
 }
+
+    
+
+
+
+
+
+
+// Feature 2
