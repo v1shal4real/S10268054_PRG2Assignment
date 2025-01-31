@@ -20,7 +20,6 @@ int boardingGateCount = LoadBoardingGates(filepath2, boardingGateDictionary);
 Console.WriteLine($"{boardingGateCount} Boarding Gates Loaded!");
 
 
-
 int LoadAirlines(string filePath, Dictionary<string, Airline> airlineDictionary)
 {
     int count = 0;
@@ -102,8 +101,6 @@ int LoadBoardingGates(string filePath, Dictionary<string, BoardingGate> boarding
     return count;
 }
 
-
-
 // Feature 2
 
 // Dictionary to store Flight objects
@@ -178,6 +175,49 @@ int LoadFlights(string filePath, Dictionary<string, Flight> flightDictionary)
 
     return count; // Return the number of flights loaded
 }
+
+ListAllFlights(flightDictionary, airlineDictionary);
+
+
+// Feature 3
+
+
+// Method to list all flights with their basic information
+void ListAllFlights(Dictionary<string, Flight> flightDictionary, Dictionary<string, Airline> airlineDictionary)
+{
+    Console.WriteLine("=============================================");
+    Console.WriteLine("List of Flights Changi Airport Terminal 5");
+    Console.WriteLine("=============================================");
+    Console.WriteLine("{0,-15} {1,-20} {2,-20} {3,-20} {4,-30}",
+        "Flight Number", "Airline Name", "Origin", "Destination", "Expected Departure/Arrival Time");
+
+    Console.WriteLine("------------------------------------------------------------------------------------------");
+
+    foreach (var flight in flightDictionary.Values)
+    {
+        // Get airline name from the first two letters of the flight number
+        string airlineCode = flight.flightNumber.Substring(0, 2);
+        string airlineName = "Unknown Airline"; // Default in case the airline is not found
+
+        if (airlineDictionary.ContainsKey(airlineCode))
+        {
+            airlineName = airlineDictionary[airlineCode].name;
+        }
+
+        // Display the flight details in a properly formatted table
+        Console.WriteLine("{0,-15} {1,-20} {2,-20} {3,-20} {4,-30}",
+            flight.flightNumber, airlineName, flight.origin, flight.destination, flight.expectedTime);
+    }
+
+}
+
+
+
+
+
+Console.WriteLine("\nPress any key to exit...");
+Console.ReadKey();
+
 
 
 
