@@ -1,10 +1,7 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-
-
+﻿
 using S10268054_PRG2Assignment;
 // Feature 1
-// Dictionaries to store Airline and BoardingGate objects
+
 
 Dictionary<string, Airline> airlineDictionary = new Dictionary<string, Airline>();
 Dictionary<string, BoardingGate> boardingGateDictionary = new Dictionary<string, BoardingGate>();
@@ -103,7 +100,7 @@ int LoadBoardingGates(string filePath, Dictionary<string, BoardingGate> boarding
 
 // Feature 2
 
-// Dictionary to store Flight objects
+
 Dictionary<string, Flight> flightDictionary = new Dictionary<string, Flight>();
 
 
@@ -121,18 +118,18 @@ int LoadFlights(string filePath, Dictionary<string, Flight> flightDictionary)
         using (StreamReader sr = new StreamReader(filePath))
         {
             string line;
-            bool isFirstLine = true; // Flag to skip the header
+            bool isFirstLine = true; 
             while ((line = sr.ReadLine()) != null)
             {
                 if (isFirstLine)
                 {
                     isFirstLine = false;
-                    continue; // Skip the header line
+                    continue; 
                 }
 
                 if (string.IsNullOrWhiteSpace(line)) continue;
 
-                // Assuming CSV format: flightNumber,origin,destination,expectedTime,status,specialRequestCode
+                
                 string[] parts = line.Split(',');
                 if (parts.Length >= 5)
                 {
@@ -143,7 +140,7 @@ int LoadFlights(string filePath, Dictionary<string, Flight> flightDictionary)
                     string status = parts[4].Trim();
                     string specialRequestCode = parts.Length == 6 ? parts[5].Trim() : null;
 
-                    // Create the appropriate Flight object based on the special request code
+                    
                     Flight flight;
                     switch (specialRequestCode)
                     {
@@ -161,7 +158,7 @@ int LoadFlights(string filePath, Dictionary<string, Flight> flightDictionary)
                             break;
                     }
 
-                    // Add the Flight object to the dictionary
+                    
                     flightDictionary[flightNumber] = flight;
                     count++;
                 }
@@ -173,10 +170,57 @@ int LoadFlights(string filePath, Dictionary<string, Flight> flightDictionary)
         Console.WriteLine($"Error loading flights: {ex.Message}");
     }
 
-    return count; // Return the number of flights loaded
+    return count; 
 }
 
-ListAllFlights(flightDictionary, airlineDictionary);
+
+
+
+while (true) 
+{
+    
+    Console.WriteLine("\n=============================================");
+    Console.WriteLine("Welcome to Changi Airport Terminal 5");
+    Console.WriteLine("=============================================");
+    Console.WriteLine("1. List All Flights");
+    Console.WriteLine("2. List Boarding Gates");
+    Console.WriteLine("3. Create Flight");
+    Console.WriteLine("4. Display Airline Flights");
+    Console.WriteLine("\n0. Exit");
+    Console.Write("\nPlease select your option: ");
+
+    
+    string input = Console.ReadLine().Trim();
+
+    
+    if (input == "1")
+    {
+        ListAllFlights(flightDictionary, airlineDictionary);
+    }
+    else if (input == "2")
+    {
+        ListAllBoardingGates(boardingGateDictionary);
+    }
+    else if (input == "3")
+    {
+        AddNewFlight(flightDictionary, filepath3);
+    }
+    else if (input == "4")
+    {
+        DisplayFlightDetails(airlineDictionary, flightDictionary, boardingGateDictionary);
+    }
+    else if (input == "0")
+    {
+        Console.WriteLine("\nGoodbye!");
+        break; 
+    }
+    else
+    {
+        Console.WriteLine("\nInvalid option! Please enter a number from 0 to 4.");
+    }
+}
+
+
 
 
 // Feature 3
@@ -195,22 +239,22 @@ void ListAllFlights(Dictionary<string, Flight> flightDictionary, Dictionary<stri
 
     foreach (var flight in flightDictionary.Values)
     {
-        // Get airline name from the first two letters of the flight number
+        
         string airlineCode = flight.flightNumber.Substring(0, 2);
-        string airlineName = "Unknown Airline"; // Default in case the airline is not found
+        string airlineName = "Unknown Airline";
 
         if (airlineDictionary.ContainsKey(airlineCode))
         {
             airlineName = airlineDictionary[airlineCode].name;
         }
 
-        // Display the flight details in a properly formatted table
+        
         Console.WriteLine("{0,-15} {1,-20} {2,-20} {3,-20} {4,-30}",
             flight.flightNumber, airlineName, flight.origin, flight.destination, flight.expectedTime);
     }
 
 }
-ListAllBoardingGates(boardingGateDictionary);
+
 
 // Feature 4
 
@@ -224,7 +268,7 @@ void ListAllBoardingGates(Dictionary<string, BoardingGate> boardingGateDictionar
 
     foreach (var gate in boardingGateDictionary.Values)
     {
-        // Print gate name and whether it supports each request
+        
         Console.WriteLine("{0,-10} {1,-7} {2,-7} {3,-7}",
             gate.gateName,
             gate.supportsDDJB ? "True" : "False",
@@ -235,15 +279,15 @@ void ListAllBoardingGates(Dictionary<string, BoardingGate> boardingGateDictionar
 
 // Feature 6
 
-AddNewFlight(flightDictionary, filepath3);
+
 
 void AddNewFlight(Dictionary<string, Flight> flightDictionary, string filePath)
 {
-    bool addAnother = true; // Loop control variable
+    bool addAnother = true; 
 
     while (addAnother)
     {
-        // Prompt user for basic flight information
+        
         Console.WriteLine("\nEnter Flight Number: ");
         string flightNumber = Console.ReadLine().Trim();
 
@@ -261,11 +305,11 @@ void AddNewFlight(Dictionary<string, Flight> flightDictionary, string filePath)
         }
 
 
-        // Ask user if they want to enter a Special Request Code
+        
         Console.WriteLine("Would you like to enter a Special Request Code? (DDJB, CFFT, LWTT) [Leave blank for none]: ");
         string specialRequestCode = Console.ReadLine().Trim().ToUpper();
 
-        // Create the appropriate Flight object
+        
         Flight newFlight;
         switch (specialRequestCode)
         {
@@ -283,35 +327,36 @@ void AddNewFlight(Dictionary<string, Flight> flightDictionary, string filePath)
                 break;
         }
 
-        // Add the new flight to the dictionary
+        
         flightDictionary[flightNumber] = newFlight;
 
-        // Append the new flight to the CSV file
+        
         AppendFlightToCSV(filepath3, newFlight);
 
-        // Print confirmation message matching your required output
+        
         Console.WriteLine($"\nFlight {flightNumber} has been added!");
 
-        // Ask if they want to add another flight
+        
         Console.WriteLine("Would you like to add another flight? (Y/N)");
         string response = Console.ReadLine().Trim().ToUpper();
         addAnother = (response == "Y");
+        Console.WriteLine("All flights have been successfully added.");
     } 
 }
 
-    Console.WriteLine("All flights have been successfully added.");
+   
 
 
-// Function to append a new flight entry to the flights.csv file
+
 void AppendFlightToCSV(string filePath, Flight flight)
 {
     try
     {
-        using (StreamWriter sw = new StreamWriter(filePath, true)) // Open file in append mode
+        using (StreamWriter sw = new StreamWriter(filePath, true)) 
         {
             string line = $"{flight.flightNumber},{flight.origin},{flight.destination},{flight.expectedTime:yyyy-MM-dd HH:mm},{flight.status}";
 
-            // Include special request code if applicable
+            
             if (flight is DDJBFlight)
                 line += ",DDJB";
             else if (flight is CFFTFlight)
@@ -330,7 +375,7 @@ void AppendFlightToCSV(string filePath, Flight flight)
 
 
 // Feature 7
-DisplayFlightDetails(airlineDictionary, flightDictionary, boardingGateDictionary);
+
 void DisplayFlightDetails(Dictionary<string, Airline> airlineDictionary, Dictionary<string, Flight> flightDictionary, Dictionary<string, BoardingGate> boardingGateDictionary)
 {
 
@@ -354,7 +399,7 @@ void DisplayFlightDetails(Dictionary<string, Airline> airlineDictionary, Diction
             Console.WriteLine("Invalid airline code! Please enter again: ");
             airlineCode = Console.ReadLine().Trim().ToUpper();
         }
-        Airline selectedAirline = airlineDictionary[airlineCode]; // Now it's guaranteed to be valid
+        Airline selectedAirline = airlineDictionary[airlineCode];
 
 
 
@@ -371,7 +416,7 @@ void DisplayFlightDetails(Dictionary<string, Airline> airlineDictionary, Diction
             }
         }
 
-        // If no flights are found, inform the user and exit
+        
         if (airlineFlights.Count == 0)
         {
             Console.WriteLine("No flights found for " + selectedAirline.name);
@@ -391,12 +436,6 @@ void DisplayFlightDetails(Dictionary<string, Airline> airlineDictionary, Diction
                 flight.flightNumber, selectedAirline.name, flight.origin, flight.destination, flight.expectedTime.ToString("dd/MM/yyyy hh:mm tt"));
         }
 }
-
-
-
-
-
-
 
 Console.WriteLine("\nPress any key to exit...");
 Console.ReadKey();
