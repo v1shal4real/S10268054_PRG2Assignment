@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+//==========================================================
+// Student Number : S10368054
+// Student Name : Thulasiahilan Vishal
+//==========================================================
 namespace S10268054_PRG2Assignment
 {
     class NORMFlight : Flight
@@ -15,7 +18,7 @@ namespace S10268054_PRG2Assignment
 
         public override double CalculateFees()
         {
-            return 0.0;
+            return 0;
         }
 
     }

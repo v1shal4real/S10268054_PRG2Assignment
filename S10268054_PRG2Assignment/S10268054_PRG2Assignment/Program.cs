@@ -1,5 +1,10 @@
 ﻿
 using S10268054_PRG2Assignment;
+//==========================================================
+// Student Number : S10368054
+// Student Name : Thulasiahilan Vishal
+//==========================================================
+
 // Feature 1
 
 Dictionary<string, Airline> airlineDictionary = new Dictionary<string, Airline>();
@@ -297,7 +302,7 @@ void AddNewFlight(Dictionary<string, Flight> flightDictionary, string filePath)
 
         Console.Write("Enter Destination: ");
         string destination;
-        while (string.IsNullOrWhiteSpace(destination = Console.ReadLine().Trim().ToUpper())) // ✅ Prevent empty input
+        while (string.IsNullOrWhiteSpace(destination = Console.ReadLine().Trim().ToUpper())) 
         {
             Console.Write("Destination cannot be empty! Enter Destination: ");
         };
