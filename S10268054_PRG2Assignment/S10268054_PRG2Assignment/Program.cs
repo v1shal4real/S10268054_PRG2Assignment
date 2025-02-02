@@ -2,7 +2,6 @@
 using S10268054_PRG2Assignment;
 // Feature 1
 
-
 Dictionary<string, Airline> airlineDictionary = new Dictionary<string, Airline>();
 Dictionary<string, BoardingGate> boardingGateDictionary = new Dictionary<string, BoardingGate>();
 
@@ -100,10 +99,7 @@ int LoadBoardingGates(string filePath, Dictionary<string, BoardingGate> boarding
 
 // Feature 2
 
-
 Dictionary<string, Flight> flightDictionary = new Dictionary<string, Flight>();
-
-
 string filepath3 = @"C:\S0268054_PRG2Assignment\S10268054_PRG2Assignment\S10268054_PRG2Assignment\flights.csv";
 Console.WriteLine("Loading Flights...");
 int flightCount = LoadFlights(filepath3, flightDictionary);
@@ -186,6 +182,7 @@ while (true)
     Console.WriteLine("2. List Boarding Gates");
     Console.WriteLine("3. Create Flight");
     Console.WriteLine("4. Display Airline Flights");
+    Console.WriteLine("5. Bulk Assign Flights to Boarding Gates");
     Console.WriteLine("\n0. Exit");
     Console.Write("\nPlease select your option: ");
 
@@ -209,23 +206,26 @@ while (true)
     {
         DisplayFlightDetails(airlineDictionary, flightDictionary, boardingGateDictionary);
     }
+    else if (input == "5") 
+    {
+        BulkAssignFlights(flightDictionary, boardingGateDictionary, airlineDictionary);
+    }
     else if (input == "0")
     {
-        Console.WriteLine("\nGoodbye!");
+        Console.WriteLine("\n Goodbye!");
         break; 
     }
     else
     {
-        Console.WriteLine("\nInvalid option! Please enter a number from 0 to 4.");
+        Console.WriteLine("\nInvalid option! Please enter a number from 0 to 5.");
     }
 }
 
 
 
 
+
 // Feature 3
-
-
 
 void ListAllFlights(Dictionary<string, Flight> flightDictionary, Dictionary<string, Airline> airlineDictionary)
 {
@@ -258,7 +258,6 @@ void ListAllFlights(Dictionary<string, Flight> flightDictionary, Dictionary<stri
 
 // Feature 4
 
-
 void ListAllBoardingGates(Dictionary<string, BoardingGate> boardingGateDictionary)
 {
     Console.WriteLine("\n=============================================");
@@ -279,8 +278,6 @@ void ListAllBoardingGates(Dictionary<string, BoardingGate> boardingGateDictionar
 
 // Feature 6
 
-
-
 void AddNewFlight(Dictionary<string, Flight> flightDictionary, string filePath)
 {
     bool addAnother = true; 
@@ -288,25 +285,33 @@ void AddNewFlight(Dictionary<string, Flight> flightDictionary, string filePath)
     while (addAnother)
     {
         
-        Console.WriteLine("\nEnter Flight Number: ");
-        string flightNumber = Console.ReadLine().Trim();
+        Console.Write("\nEnter Flight Number: ");
+        string flightNumber = Console.ReadLine().Trim().ToUpper();
 
-        Console.WriteLine("Enter Origin: ");
-        string origin = Console.ReadLine().Trim();
+        Console.Write("Enter Origin: ");
+        string origin;
+        while (string.IsNullOrWhiteSpace(origin = Console.ReadLine().Trim().ToUpper()))
+        {
+            Console.Write("Origin cannot be empty! Enter Origin:  ");
+        }
 
-        Console.WriteLine("Enter Destination: ");
-        string destination = Console.ReadLine().Trim();
+        Console.Write("Enter Destination: ");
+        string destination;
+        while (string.IsNullOrWhiteSpace(destination = Console.ReadLine().Trim().ToUpper())) // ✅ Prevent empty input
+        {
+            Console.Write("Destination cannot be empty! Enter Destination: ");
+        };
 
-        Console.WriteLine("Enter Expected Departure/Arrival Time (dd/MM/yyyy HH:mm): ");
+        Console.Write("Enter Expected Departure/Arrival Time (dd/MM/yyyy HH:mm): ");
         DateTime expectedTime;
         while (!DateTime.TryParseExact(Console.ReadLine().Trim(), "d/M/yyyy HH:mm", null, System.Globalization.DateTimeStyles.None, out expectedTime))
         {
-            Console.WriteLine("Invalid format! Please enter date and time in dd/MM/yyyy HH:mm format: ");
+            Console.Write("Invalid format! Please enter date and time in dd/MM/yyyy HH:mm format: ");
         }
 
 
         
-        Console.WriteLine("Would you like to enter a Special Request Code? (DDJB, CFFT, LWTT) [Leave blank for none]: ");
+        Console.Write("Would you like to enter a Special Request Code? (DDJB, CFFT, LWTT) [Leave blank for none]: ");
         string specialRequestCode = Console.ReadLine().Trim().ToUpper();
 
         
@@ -340,7 +345,7 @@ void AddNewFlight(Dictionary<string, Flight> flightDictionary, string filePath)
         Console.WriteLine("Would you like to add another flight? (Y/N)");
         string response = Console.ReadLine().Trim().ToUpper();
         addAnother = (response == "Y");
-        Console.WriteLine("All flights have been successfully added.");
+        
     } 
 }
 
@@ -379,34 +384,36 @@ void AppendFlightToCSV(string filePath, Flight flight)
 void DisplayFlightDetails(Dictionary<string, Airline> airlineDictionary, Dictionary<string, Flight> flightDictionary, Dictionary<string, BoardingGate> boardingGateDictionary)
 {
 
-        Console.WriteLine("\n=============================================");
-        Console.WriteLine("List of Airlines for Changi Airport Terminal 5");
-        Console.WriteLine("=============================================");
-        Console.WriteLine("{0,-15} {1,-30}", "Airline Code", "Airline Name");
+    Console.WriteLine("\n=============================================");
+    Console.WriteLine("List of Airlines for Changi Airport Terminal 5");
+    Console.WriteLine("=============================================");
+    Console.WriteLine("{0,-15} {1,-30}", "Airline Code", "Airline Name");
 
-        foreach (var airline in airlineDictionary.Values)
+    foreach (var airline in airlineDictionary.Values)
+    {
+        Console.WriteLine("{0,-15} {1,-30}", airline.code, airline.name);
+    }
+
+
+    string airlineCode;
+    while (true)
+    {
+        Console.Write("\nEnter Airline Code: ");
+        airlineCode = Console.ReadLine().Trim().ToUpper();
+
+        if (airlineDictionary.ContainsKey(airlineCode))
         {
-            Console.WriteLine("{0,-15} {1,-30}", airline.code, airline.name);
+            break; 
         }
-
-
-        Console.WriteLine("\nEnter Airline Code: ");
-        string airlineCode = Console.ReadLine().Trim().ToUpper();
-
-
-        while (!airlineDictionary.ContainsKey(airlineCode))
-        {
-            Console.WriteLine("Invalid airline code! Please enter again: ");
-            airlineCode = Console.ReadLine().Trim().ToUpper();
-        }
-        Airline selectedAirline = airlineDictionary[airlineCode];
+        Console.WriteLine("Invalid airline code! Please enter again: ");
+    }
 
 
 
+    
+    Airline selectedAirline = airlineDictionary[airlineCode];
 
-
-
-    List<Flight> airlineFlights = new List<Flight>();
+         List<Flight> airlineFlights = new List<Flight>();
 
         foreach (var flight in flightDictionary.Values)
         {
@@ -436,6 +443,164 @@ void DisplayFlightDetails(Dictionary<string, Airline> airlineDictionary, Diction
                 flight.flightNumber, selectedAirline.name, flight.origin, flight.destination, flight.expectedTime.ToString("dd/MM/yyyy hh:mm tt"));
         }
 }
+
+// Advanced Feature
+
+
+void BulkAssignFlights(Dictionary<string, Flight> flightDictionary, Dictionary<string, BoardingGate> boardingGateDictionary, Dictionary<string, Airline> airlineDictionary)
+{
+    Queue<Flight> flightQueue = new Queue<Flight>();
+    List<BoardingGate> unassignedGates = new List<BoardingGate>();
+
+    int initiallyAssignedFlights = 0;
+    int initiallyAssignedGates = 0;
+
+    foreach (var flight in flightDictionary.Values)
+    {
+        bool hasGate = false;
+
+        foreach (var gate in boardingGateDictionary.Values)
+        {
+            if (gate.flight != null && gate.flight.flightNumber == flight.flightNumber)
+            {
+                hasGate = true;
+                initiallyAssignedFlights++;
+                break;
+            }
+        }
+
+        if (!hasGate)
+        {
+            flightQueue.Enqueue(flight);
+        }
+    }
+
+    Console.WriteLine($"\nTotal Flights without a Boarding Gate: {flightQueue.Count}");
+
+    foreach (var gate in boardingGateDictionary.Values)
+    {
+        if (gate.flight == null)
+        {
+            unassignedGates.Add(gate);
+        }
+        else
+        {
+            initiallyAssignedGates++;
+        }
+    }
+
+    Console.WriteLine($"Total Unassigned Boarding Gates: {unassignedGates.Count}\n");
+
+    int flightsAssigned = 0;
+    int gatesAssigned = 0;
+
+    while (flightQueue.Count > 0 && unassignedGates.Count > 0)
+    {
+        Flight flight = flightQueue.Dequeue();
+        BoardingGate assignedGate = null;
+
+        foreach (var gate in unassignedGates)
+        {
+            if (flight is DDJBFlight && gate.supportsDDJB)
+            {
+                assignedGate = gate;
+                break;
+            }
+            else if (flight is CFFTFlight && gate.supportsCFFT)
+            {
+                assignedGate = gate;
+                break;
+            }
+            else if (flight is LWTTFlight && gate.supportsLWTT)
+            {
+                assignedGate = gate;
+                break;
+            }
+        }
+
+        if (assignedGate == null)
+        {
+            foreach (var gate in unassignedGates)
+            {
+                bool supportsNoRequests = !gate.supportsDDJB && !gate.supportsCFFT && !gate.supportsLWTT;
+
+                if (supportsNoRequests)
+                {
+                    assignedGate = gate;
+                    break;
+                }
+            }
+        }
+
+        if (assignedGate != null)
+        {
+            assignedGate.flight = flight;
+            unassignedGates.Remove(assignedGate);
+            flightsAssigned++;
+            gatesAssigned++;
+
+            string airlineCode = flight.flightNumber.Substring(0, 2);
+            string airlineName = airlineDictionary.ContainsKey(airlineCode) ? airlineDictionary[airlineCode].name : "Unknown Airline";
+            string specialRequest;
+
+            if (flight is DDJBFlight)
+            {
+                specialRequest = "DDJB";
+            }
+            else if (flight is CFFTFlight)
+            {
+                specialRequest = "CFFT";
+            }
+            else if (flight is LWTTFlight)
+            {
+                specialRequest = "LWTT";
+            }
+            else
+            {
+                specialRequest = "None";
+            }
+
+            Console.WriteLine("\nFlight Assigned:");
+            Console.WriteLine($"Flight Number  : {flight.flightNumber}");
+            Console.WriteLine($"Airline Name   : {airlineName}");
+            Console.WriteLine($"Origin         : {flight.origin}");
+            Console.WriteLine($"Destination    : {flight.destination}");
+            Console.WriteLine($"Expected Time  : {flight.expectedTime:dd/MM/yyyy HH:mm}");
+            Console.WriteLine($"Special Request: {specialRequest}");
+            Console.WriteLine($"Boarding Gate  : {assignedGate.gateName}");
+        }
+    }
+
+    int totalProcessedFlights = flightsAssigned + initiallyAssignedFlights;
+    int totalProcessedGates = gatesAssigned + initiallyAssignedGates;
+    double percentageProcessedFlights;
+    if (totalProcessedFlights > 0)
+    {
+        percentageProcessedFlights = (flightsAssigned * 100.0) / totalProcessedFlights;
+    }
+    else
+    {
+        percentageProcessedFlights = 0;
+    }
+
+    double percentageProcessedGates;
+    if (totalProcessedGates > 0)
+    {
+        percentageProcessedGates = (gatesAssigned * 100.0) / totalProcessedGates;
+    }
+    else
+    {
+        percentageProcessedGates = 0;
+    }
+    Console.WriteLine("\n=============================================");
+    Console.WriteLine("Bulk Flight Processing Summary");
+    Console.WriteLine("=============================================");
+    Console.WriteLine($"Total Flights Assigned: {flightsAssigned}");
+    Console.WriteLine($"Total Gates Assigned: {gatesAssigned}");
+    Console.WriteLine($"Percentage of Flights Processed Automatically: {percentageProcessedFlights:F2}%");
+    Console.WriteLine($"Percentage of Gates Assigned Automatically: {percentageProcessedGates:F2}%");
+}
+
 
 Console.WriteLine("\nPress any key to exit...");
 Console.ReadKey();
